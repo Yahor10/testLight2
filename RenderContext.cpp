@@ -31,7 +31,7 @@ void RenderContext::bindTexture(GLenum index, int texture) {
     glBindTexture(GL_TEXTURE_2D, texture);
 }
 
-void RenderContext::bindTexture(GLenum index, int texture, std::string loc, int pos) {
+void RenderContext::bindTexture(GLenum index, int texture, std::string loc, int pos) const{
     int tex_a_location = oxglGetUniformLocation(_program, loc.c_str());
     oxglUniform1i(tex_a_location, pos);
 

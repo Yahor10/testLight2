@@ -22,11 +22,11 @@ public:
 
     void bindTexture(GLenum index, int texture);
 
-    void bindTexture(GLenum index, int texture, std::string loc, int pos);
+    void bindTexture(GLenum index, int texture, std::string loc, int pos) const;
 
     void bindVertices(GLuint vbo, size_t size)const;
 
-    void RenderContext::bindValue(const std::string& loc, const float f) const ;
+    void bindValue(const std::string& loc, const float f) const ;
 };
 
 
