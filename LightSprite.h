@@ -9,6 +9,7 @@
 #include "IDisplayLight.h"
 
 class LightSprite  : public IDisplayLight{
+public:
     LightSprite(){
 
     }
@@ -18,9 +19,9 @@ class LightSprite  : public IDisplayLight{
         m_position = Vector3(0, 0, 0.4);
 
         // init buffers
-        oxglGenBuffers(1, &vbo);
-        oxglBindBuffer(GL_ARRAY_BUFFER, vbo);
-        oxglBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+//        oxglGenBuffers(1, &vbo);
+//        oxglBindBuffer(GL_ARRAY_BUFFER, vbo);
+//        oxglBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     }
 
     virtual void Initialize();

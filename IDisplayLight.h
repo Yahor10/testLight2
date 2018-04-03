@@ -11,6 +11,7 @@
 using namespace oxygine;
 
 class IDisplayLight {
+public:
     virtual void Initialize() = 0;
 
     virtual void LoadResources() = 0;

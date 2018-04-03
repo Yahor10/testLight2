@@ -19,23 +19,24 @@ void LightSprite::Dispose() {
 }
 
 void LightSprite::Draw(const RenderContext& rc) {
-    rc.bindVertices(vbo, sizeof(vertices));
-//    rc.BindValue("uPosition", this->m_position);
+//    rc.bindVertices(vbo, sizeof(vertices));
+//    rc.bindValue("uPosition", this->m_position);
 
     rc.bindTexture(GL_TEXTURE0,color,"tSprite",0);
-    rc.bindTexture(GL_TEXTURE0,normal,"tNormal",1);
-//
+    rc.bindTexture(GL_TEXTURE1,normal,"tNormal",1);
+
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 //    rc.Draw(6); //2 tris
 }
 
 void LightSprite::DrawOcclusion(const RenderContext &rc) {
-//    rc.BindVertices(vbo, sizeof(vertices));
-//    rc.BindValue("uPosition", this->m_position);
+    rc.bindVertices(vbo, sizeof(vertices));
+    rc.bindValue("uPosition", this->m_position);
 //
-//    rc.BindTexture("tSprite", 0, this->tSprite);
-//    rc.BindTexture("tNormal", 1, this->tNormal);
+    rc.bindTexture(GL_TEXTURE0,color,"tSprite",0);
+    rc.bindTexture(GL_TEXTURE0,normal,"tNormal",1);
 //
-//    rc.Draw(6); //2 tris
+    rc.Draw(6); //2 tris
 }
 
 //void Sprite::DrawOverlayMask(const RenderContext& rc) {
