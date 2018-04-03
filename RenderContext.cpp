@@ -23,6 +23,18 @@ void RenderContext::bindVertices(GLuint vbo, size_t size) const {// base aVertex
     oxglVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 }
 
+void RenderContext::bindPosVertices(int pos, size_t size,myVertex* vector3) const {// base aVertextValue
+    oxglEnableVertexAttribArray(pos);
+    oxglVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, size, vector3);
+}
+
+void RenderContext::bindUVVertices(int pos, size_t size,myVertex* vector3) const {// base aVertextValue
+    oxglEnableVertexAttribArray(pos);
+    oxglVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, size, (float*)vector3 + 3);
+}
+
+
+
 void RenderContext::bindTexture(GLenum index, int texture) {
     oxglActiveTexture(index);
     glBindTexture(GL_TEXTURE_2D, texture);

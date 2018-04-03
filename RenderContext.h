@@ -12,6 +12,11 @@
 
 using namespace oxygine;
 
+struct myVertex {
+    Vector3 pos;
+    Vector2 uv;
+};
+
 class RenderContext {
 
     GLuint _program;
@@ -34,6 +39,11 @@ public:
     void bindTexture(GLenum index, int texture, std::string loc, int pos) const;
 
     void bindVertices(GLuint vbo, size_t size)const;
+
+    void bindPosVertices(int vbo, size_t size,myVertex* arr)const;
+
+    void bindUVVertices(int vbo, size_t size,myVertex* arr)const;
+
 
     void bindValue(const std::string& loc, const float f) const ;
 
