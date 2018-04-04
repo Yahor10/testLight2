@@ -44,6 +44,8 @@ public:
 
     void bindUVVertices(int vbo, size_t size,myVertex* arr)const;
 
+    void bindQuadVertices(int vbo,size_t size)const;
+
 
     void bindValue(const std::string& loc, const float f) const ;
 
