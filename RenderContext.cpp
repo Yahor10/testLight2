@@ -8,7 +8,7 @@
 
 RenderContext::RenderContext() { }
 
-RenderContext::~RenderContext() {
+RenderContext::~    RenderContext() {
     oxglDeleteProgram(_program);
 }
 
@@ -40,6 +40,13 @@ void RenderContext::bindTexture(GLenum index, int texture) {
     glBindTexture(GL_TEXTURE_2D, texture);
 }
 
+void RenderContext::bindTexture(const std::string& loc, GLuint active, const GLuint tex)const {
+    GLuint location = glGetUniformLocation(_program, loc.c_str());
+    glActiveTexture(GL_TEXTURE0 + active);
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glUniform1i(location, active);
+}
+
 void RenderContext::bindTexture(GLenum index, int texture, std::string loc, int pos) const {
     int tex_a_location = oxglGetUniformLocation(_program, loc.c_str());
     oxglUniform1i(tex_a_location, pos);
@@ -48,7 +55,7 @@ void RenderContext::bindTexture(GLenum index, int texture, std::string loc, int 
     glBindTexture(GL_TEXTURE_2D, texture);
 }
 
-void RenderContext::bindValue(const std::string &loc, const float f) const {
+void RenderContext::bindValue(const std::string &&loc, float f) const {
     GLint ul = oxglGetUniformLocation(_program, loc.c_str());
     oxglUniform1f(ul, f);
 }
@@ -79,7 +86,6 @@ void RenderContext::bindQuadVertices(int vbo, size_t size) const {
 //    GLint ul = glGetUniformLocation(activeProgram, loc.c_str());
 //    glUniformMatrix3fv(ul, 1, GL_FALSE, glm::value_ptr(m));
 //}
-
 
 void RenderContext::Draw(const size_t count) const { //Note that this is the sizeof size. might have to change
     glDrawArrays(GL_TRIANGLES, 0, count);

@@ -30,8 +30,8 @@ void LightSprite::Draw(const RenderContext& rc) {
 }
 
 void LightSprite::DrawOcclusion(const RenderContext &rc) {
-    rc.bindVertices(vbo, sizeof(vertices));
-    rc.bindValue("uPosition", this->m_position);
+//    rc.bindVertices(vbo, sizeof(vertices));
+//    rc.bindValue("uPosition", this->m_position);
 //
     rc.bindTexture(GL_TEXTURE0,color,"tSprite",0);
     rc.bindTexture(GL_TEXTURE0,normal,"tNormal",1);

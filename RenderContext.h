@@ -36,6 +36,8 @@ public:
 
     void bindTexture(GLenum index, int texture);
 
+    void bindTexture(const std::string& loc, GLuint active, const GLuint tex) const ;
+
     void bindTexture(GLenum index, int texture, std::string loc, int pos) const;
 
     void bindVertices(GLuint vbo, size_t size)const;
@@ -47,9 +49,8 @@ public:
     void bindQuadVertices(int vbo,size_t size)const;
 
 
-    void bindValue(const std::string& loc, const float f) const ;
+    void bindValue(const std::string&& loc, float f) const ;
 
-    void bindValue(const std::string&& loc, const float f) const;
     void bindValue(const std::string&& loc, const bool b) const;
     void bindValue(const std::string&& loc, const Vector2& v) const;
     void bindValue(const std::string&& loc, const Vector3& v) const;
