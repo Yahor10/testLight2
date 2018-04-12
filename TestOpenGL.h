@@ -69,10 +69,8 @@ void main() {
 
 
 const char *vertexShaderDataLightSprite = R"(
-          in vec3 a_position;
-          in vec2 a_uv;
-
-uniform mat4 projection;
+          in vec3 aVertex;
+uniform mat3 uViewportTransform;
 uniform vec2 uCameraPosition;
 uniform vec3 uPosition;
 uniform sampler2D tSprite;
@@ -81,9 +79,17 @@ out vec2 vST;
 out vec2 vPositionUnits;
 
 void main() {
-       vec4 position = vec4(a_position, 1.0);
-       gl_Position = projection * position;
-      vST = a_uv;
+    vec2 size = textureSize(tSprite, 0);
+    vec3 pxPosition = vec3(size.x * aVertex.x + uPosition.x,
+                           size.y * aVertex.y + uPosition.y, 1);
+    pxPosition.xy -= uCameraPosition;
+
+    gl_Position = vec4((uViewportTransform * pxPosition).xy, uPosition.z, 1);
+
+    //FIXME: This doesn't account for bits  outside of the camera view.
+    vPositionUnits = pxPosition.xy;
+
+    vST = vec2(aVertex.x, aVertex.y);
 }
 		)";
 
@@ -125,22 +131,39 @@ public:
 
 
     OpenGLSprite() {
-        load();
 
-        initPrograms();
-        initBuffers();
-
-        glEnable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-
-
-        CHECKGL();
     }
 
-    void load() {// TODO add full function
+    void loadAll() {
+
+        glViewport(0, 0, 800, 600);
+        glClearColor(0, 0, 0, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        oxglGenFramebuffers(1, &m_sprite_gbuffer);
+        oxglBindFramebuffer(GL_FRAMEBUFFER, m_sprite_gbuffer); // gen sprite
+//        AnimationFrame frame = resources.getResAnim("bg")->getFrame(0);
+//        const RectF &srcRect = frame.getSrcRect();
+////
+////
+//        int texture = (int) (size_t) frame.getDiffuse().base->getHandle();
+//        auto LightSpr = new LightSprite(texture, texture);
+//
+//        LightSpr->LoadResources();
+//
+//        load();
+//
+//        initPrograms();
+//        initBuffers();
+////
+//        glEnable(GL_TEXTURE_2D);
+//        glDisable(GL_BLEND);
+//        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    }
+
+    void load() {
         glGenVertexArrays(1, &vertexArray);
-//        glBindVertexArray(vertexArray);
+        glBindVertexArray(vertexArray);
 
         //Make fullscreen quad vbo.
         Vector3 verts[6] = {
@@ -154,9 +177,9 @@ public:
 
         m_quad_vbo_size = sizeof(verts);
 
-//        glGenBuffers(1, &m_quad_vbo);
-//        glBindBuffer(GL_ARRAY_BUFFER, m_quad_vbo);
-//        glBufferData(GL_ARRAY_BUFFER, m_quad_vbo_size, &verts[0], GL_STATIC_DRAW);
+        glGenBuffers(1, &m_quad_vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, m_quad_vbo);
+        glBufferData(GL_ARRAY_BUFFER, m_quad_vbo_size, &verts[0], GL_STATIC_DRAW);
     }
 
     void beginDrawSprites() {
@@ -185,8 +208,8 @@ public:
         // TODO init shaders and global uniforms
         CHECKGL();
 //
-        oxglBindAttribLocation(_spriteprogram, 0, "a_position");
-        oxglBindAttribLocation(_spriteprogram, 1, "a_uv");
+//        oxglBindAttribLocation(_spriteprogram, 0, "a_position");
+//        oxglBindAttribLocation(_spriteprogram, 1, "a_uv");
 //
         CHECKGL();
 
@@ -207,8 +230,9 @@ public:
     void initBuffers() {
         int m_width = 800;
         int m_height = 600;
-        glGenFramebuffers(1, &m_sprite_gbuffer);
-//        glBindFramebuffer(GL_FRAMEBUFFER, m_sprite_gbuffer); // gen sprite
+
+        oxglGenFramebuffers(1, &m_sprite_gbuffer);
+        oxglBindFramebuffer(GL_FRAMEBUFFER, m_sprite_gbuffer); // gen sprite
 
         //No need for precision.
         glGenTextures(1, &m_sprite_gbuffer_color);
@@ -218,20 +242,10 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
         glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_sprite_gbuffer_color, 0);
+//
+//        GLenum spriteDrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+//        glDrawBuffers(1, spriteDrawBuffers);
 
-        GLenum spriteDrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-        glDrawBuffers(1, spriteDrawBuffers);
-
-//        glGenTextures(1, &m_sprite_gbuffer_normal);
-//        glBindTexture(GL_TEXTURE_2D, m_sprite_gbuffer_normal);
-//        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-        //generate light occlusion pass framebuffer.
-        //the one that we draw one light to
-//        glGenFramebuffers(1, &m_light_pass_fbo);
-//        glBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_fbo);
     }
 
     ~OpenGLSprite() {
@@ -243,102 +257,64 @@ public:
     RenderContext lightGenctx = RenderContext();
 
     void doRender(const RenderState &rs) {
-        Material::null->apply();
-//        glBindVertexArray(vertexArray);
-
+//        Material::null->apply();
+        glBindVertexArray(vertexArray);
+//
         glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-//        glBindFramebuffer(GL_FRAMEBUFFER, m_sprite_gbuffer);
+//
+        glBindFramebuffer(GL_FRAMEBUFFER, m_sprite_gbuffer);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-//        beginDrawSprites();
-
-        IVideoDriver *driver = IVideoDriver::instance;
+//
+//
+        beginDrawSprites();
+//
+//        IVideoDriver *driver = IVideoDriver::instance;
         c.useProgram(_spriteprogram);
-
-        Matrix m = Matrix(rs.transform) * STDRenderer::instance->getViewProjection();
-
-        int projLocation = oxglGetUniformLocation(_spriteprogram, "projection");
-        oxglUniformMatrix4fv(projLocation, 1, GL_FALSE, m.ml);
-
-        AnimationFrame frame = resources.getResAnim("bg")->getFrame(0);
-        const RectF &srcRect = frame.getSrcRect();
-
-
-        int texture = (int) (size_t) frame.getDiffuse().base->getHandle();
-        auto LightSpr = new LightSprite(texture, texture);
-
-        myVertex vertices[4];
-        myVertex *v = vertices;
-
-        v->pos = Vector3(-100, -100, 0);
-        v->uv = srcRect.getLeftTop();
-        ++v;
-
-        v->pos = Vector3(100, -100, 0);
-        v->uv = srcRect.getRightTop();
-        ++v;
-
-        v->pos = Vector3(100, 100, 0);
-        v->uv = srcRect.getRightBottom();
-        ++v;
-
-        v->pos = Vector3(-100, 100, 0);
-        v->uv = srcRect.getLeftBottom();
-        ++v;
-
-
-        CHECKGL();
-
-        glEnable(GL_DEPTH_TEST);
-        glDisable(GL_BLEND); // render sprites
-
-        c.bindPosVertices(0, sizeof(myVertex), vertices);
-        c.bindUVVertices(1, sizeof(myVertex), vertices);
-
-        LightSpr->Draw(c);
-
-        glDisable(GL_DEPTH_TEST);
-
-        CHECKGL();
 //
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-
-        //        // End func
-        oxglDisableVertexAttribArray(0);// TODO refactor
-        oxglDisableVertexAttribArray(1);
+//        Matrix m = Matrix(rs.transform) * STDRenderer::instance->getViewProjection();
+//
+//        int projLocation = oxglGetUniformLocation(_spriteprogram, "projection");
+//        oxglUniformMatrix4fv(projLocation, 1, GL_FALSE, m.ml);
 //
 
-//        glBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_fbo); // render light not working for alone ???
-//        glClear(GL_COLOR_BUFFER_BIT);
-
-//        auto light = new Emitter(Vector3(200, 200, 10), 800, Vector3(1, 0.9, 0.9));
-//        lightGenctx.useProgram(_lightprogram);
-
-//        glBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_fbo);
-//        glClear(GL_COLOR_BUFFER_BIT);
-
-//        lightGenctx.bindVertices(m_quad_vbo, m_quad_vbo_size);
-//        //Set the light uniforms
-//        lightGenctx.bindValue("uLightColor", light->color());
-//        lightGenctx.bindValue("uLightPosition", light->position());
-//        lightGenctx.bindValue("uConstant", light->constant());
-//        lightGenctx.bindValue("uLinear", light->linear());
-//        lightGenctx.bindValue("uQuadratic", light->quadratic());
-//        lightGenctx.bindValue("uRadius", light->radius());
 //
-//        lightGenctx.bindValue("uCameraPosition", Vector2(0, 0));
+//        myVertex vertices[4];
+//        myVertex *v = vertices;
 //
-//        lightGenctx.bindTexture("uNormal", 0, m_sprite_gbuffer_normal);
+//        v->pos = Vector3(-100, -100, 0);
+//        v->uv = srcRect.getLeftTop();
+//        ++v;
 //
-//        //Draw the textured quad pass.
-//        lightGenctx.Draw(6);
+//        v->pos = Vector3(100, -100, 0);
+//        v->uv = srcRect.getRightTop();
+//        ++v;
 //
-
-
+//        v->pos = Vector3(100, 100, 0);
+//        v->uv = srcRect.getRightBottom();
+//        ++v;
+//
+//        v->pos = Vector3(-100, 100, 0);
+//        v->uv = srcRect.getLeftBottom();
+//        ++v;
+//
+//
+//        CHECKGL();
+//
+//        glEnable(GL_DEPTH_TEST);
+//        glDisable(GL_BLEND); // render sprites
+////
+////        c.bindPosVertices(0, sizeof(myVertex), vertices);
+////        c.bindUVVertices(1, sizeof(myVertex), vertices);
+//
+//        LightSpr->x(100);
+//        LightSpr->y(200);
+//        LightSpr->z(1);
+////        LightSpr->Draw(c);
+//
+//        glDisable(GL_DEPTH_TEST);
+//
+//        CHECKGL();
     }
 };
 
@@ -350,6 +326,7 @@ public:
         sprite->setPosition(getStage()->getSize() / 2);
         sprite->setScale(3);
         content->addChild(sprite);
+        sprite->loadAll();
 
 //        spSprite testBoth = new Sprite();
 //        testBoth->setResAnim(resources.getResAnim("batterfly"));
