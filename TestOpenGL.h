@@ -119,6 +119,7 @@ public:
 
     GLuint m_light_pass_fbo;
     GLuint m_sprite_gbuffer;
+    GLuint m_sprite_gbuffer_color;
 
     GLuint m_sprite_gbuffer_normal;
 
@@ -137,9 +138,25 @@ public:
         CHECKGL();
     }
 
-    void load() {
-//        glGenVertexArrays(1, &vertexArray);
+    void load() {// TODO add full function
+        glGenVertexArrays(1, &vertexArray);
 //        glBindVertexArray(vertexArray);
+
+        //Make fullscreen quad vbo.
+        Vector3 verts[6] = {
+                Vector3(-1, -1, 1),
+                Vector3(1, -1, 1),
+                Vector3(-1, 1, 1),
+                Vector3(1, -1, 1),
+                Vector3(-1, 1, 1),
+                Vector3(1, 1, 1)
+        };
+
+        m_quad_vbo_size = sizeof(verts);
+
+//        glGenBuffers(1, &m_quad_vbo);
+//        glBindBuffer(GL_ARRAY_BUFFER, m_quad_vbo);
+//        glBufferData(GL_ARRAY_BUFFER, m_quad_vbo_size, &verts[0], GL_STATIC_DRAW);
     }
 
     void beginDrawSprites() {
@@ -190,16 +207,30 @@ public:
     void initBuffers() {
         int m_width = 800;
         int m_height = 600;
+        glGenFramebuffers(1, &m_sprite_gbuffer);
+//        glBindFramebuffer(GL_FRAMEBUFFER, m_sprite_gbuffer); // gen sprite
 
-        glGenTextures(1, &m_sprite_gbuffer_normal);
-        glBindTexture(GL_TEXTURE_2D, m_sprite_gbuffer_normal);
+        //No need for precision.
+        glGenTextures(1, &m_sprite_gbuffer_color);
+        glBindTexture(GL_TEXTURE_2D, m_sprite_gbuffer_color);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_sprite_gbuffer_color, 0);
+
+        GLenum spriteDrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+        glDrawBuffers(1, spriteDrawBuffers);
+
+//        glGenTextures(1, &m_sprite_gbuffer_normal);
+//        glBindTexture(GL_TEXTURE_2D, m_sprite_gbuffer_normal);
+//        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
         //generate light occlusion pass framebuffer.
         //the one that we draw one light to
-        glGenFramebuffers(1, &m_light_pass_fbo);
+//        glGenFramebuffers(1, &m_light_pass_fbo);
 //        glBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_fbo);
     }
 
@@ -213,9 +244,16 @@ public:
 
     void doRender(const RenderState &rs) {
         Material::null->apply();
+//        glBindVertexArray(vertexArray);
 
         glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+//        glBindFramebuffer(GL_FRAMEBUFFER, m_sprite_gbuffer);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+//        beginDrawSprites();
 
         IVideoDriver *driver = IVideoDriver::instance;
         c.useProgram(_spriteprogram);
@@ -251,17 +289,19 @@ public:
         v->uv = srcRect.getLeftBottom();
         ++v;
 
-        c.bindPosVertices(0, sizeof(myVertex), vertices);
-        c.bindUVVertices(1, sizeof(myVertex), vertices);
 
         CHECKGL();
 
         glEnable(GL_DEPTH_TEST);
         glDisable(GL_BLEND); // render sprites
 
+        c.bindPosVertices(0, sizeof(myVertex), vertices);
+        c.bindUVVertices(1, sizeof(myVertex), vertices);
+
         LightSpr->Draw(c);
 
         glDisable(GL_DEPTH_TEST);
+
         CHECKGL();
 //
         glEnable(GL_BLEND);
@@ -271,6 +311,7 @@ public:
         oxglDisableVertexAttribArray(0);// TODO refactor
         oxglDisableVertexAttribArray(1);
 //
+
 //        glBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_fbo); // render light not working for alone ???
 //        glClear(GL_COLOR_BUFFER_BIT);
 
