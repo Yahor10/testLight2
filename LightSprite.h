@@ -27,6 +27,8 @@ public:
     virtual void Dispose();
 
     virtual void Draw(const RenderContext &render);
+    virtual void Draw(const RenderContext &render,int c,int n);
+
     virtual void DrawOcclusion(const RenderContext &render);
 
 protected:

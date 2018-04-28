@@ -54,6 +54,7 @@ public:
     }
 
     virtual void Draw(const RenderContext &render) = 0;
+    virtual void Draw(const RenderContext &render,int c,int n) = 0;
 
     virtual void DrawOcclusion(const RenderContext &render) = 0;
 

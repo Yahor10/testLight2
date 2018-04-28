@@ -13,6 +13,8 @@ public:
     LightBackground(const int c, const int n)
             : LightSprite(c, n) {}
     virtual void Draw(const RenderContext& render);
+    virtual void Draw(const RenderContext& render,int c,int n);
+
     virtual void DrawOcclusion(const RenderContext& render);
 };
 

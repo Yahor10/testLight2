@@ -7,10 +7,12 @@ void LightSprite::Initialize() {
 }
 
 void LightSprite::LoadResources() {
-    // init buffers
+
     oxglGenBuffers(1, &vbo);
     oxglBindBuffer(GL_ARRAY_BUFFER, vbo);
     oxglBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    CHECKGL();
+    checkGLError();
 }
 
 void LightSprite::Update(float dt) {
@@ -22,23 +24,30 @@ void LightSprite::Dispose() {
 }
 
 void LightSprite::Draw(const RenderContext& rc) {
+
     rc.bindVertices(vbo, sizeof(vertices));
     rc.bindValue("uPosition", this->m_position);
-
-//    rc.bindTexture(GL_TEXTURE0,color,"tSprite",0);
-//    rc.bindTexture(GL_TEXTURE1,normal,"tNormal",1);
 
     rc.bindTexture("tSprite", 0, this->color);
     rc.bindTexture("tNormal", 1, this->normal);
 
-
-//    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     rc.Draw(6); //2 tris
 }
 
+void LightSprite::Draw(const RenderContext& rc,int c,int n) {
+    rc.bindVertices(vbo, sizeof(vertices));
+    rc.bindValue("uPosition", this->m_position);
+
+    rc.bindTexture("tSprite", 0, c);
+    rc.bindTexture("tNormal", 1, n);
+
+    rc.Draw(6); //2 tris
+}
+
+
 void LightSprite::DrawOcclusion(const RenderContext &rc) {
-//    rc.bindVertices(vbo, sizeof(vertices));
-//    rc.bindValue("uPosition", this->m_position);
+    rc.bindVertices(vbo, sizeof(vertices));
+    rc.bindValue("uPosition", this->m_position);
 //
     rc.bindTexture(GL_TEXTURE0,color,"tSprite",0);
     rc.bindTexture(GL_TEXTURE0,normal,"tNormal",1);
