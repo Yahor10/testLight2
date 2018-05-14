@@ -416,7 +416,7 @@ public:
     }
 
     void initBuffers() {
-        glGenFramebuffers(1, &m_sprite_gbuffer);
+        oxglGenFramebuffers(1, &m_sprite_gbuffer);
         oxglBindFramebuffer(GL_FRAMEBUFFER, m_sprite_gbuffer);
 
         //No need for precision.
@@ -434,9 +434,9 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         CHECKGL();
-        glGenRenderbuffers(1, &m_sprite_gbuffer_render);
+        oxglGenRenderbuffers(1, &m_sprite_gbuffer_render);
         glBindRenderbuffer(GL_RENDERBUFFER, m_sprite_gbuffer_render);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_width, m_height);
+        oxglRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_width, m_height);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_sprite_gbuffer_render);
 
         glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, m_sprite_gbuffer_normal, 0);
@@ -446,7 +446,7 @@ public:
 
         //generate light occlusion pass framebuffer.
         //the one that we draw one light to
-        glGenFramebuffers(1, &m_light_pass_fbo);
+        oxglGenFramebuffers(1, &m_light_pass_fbo);
         glBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_fbo);
 
         glGenTextures(1, &m_light_pass_fbo_tex);
@@ -461,7 +461,7 @@ public:
         GLenum lightDrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
         glDrawBuffers(1, lightDrawBuffers);
 
-        glGenFramebuffers(1, &m_light_pass_mask_fbo);
+        oxglGenFramebuffers(1, &m_light_pass_mask_fbo);
         glBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_mask_fbo);
 
         glGenTextures(1, &m_light_pass_mask_fbo_tex); //This could probably be lower precision.
@@ -476,7 +476,7 @@ public:
         CHECKGL();
         //generate lights framebuffer.
         //the one we recombine our stuff into.
-        glGenFramebuffers(1, &m_light_accum_fbo);
+        oxglGenFramebuffers(1, &m_light_accum_fbo);
         glBindFramebuffer(GL_FRAMEBUFFER, m_light_accum_fbo);
 
         glGenTextures(1, &m_light_accum_fbo_tex);

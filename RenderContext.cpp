@@ -42,9 +42,9 @@ void RenderContext::bindTexture(GLenum index, int texture) {
 
 void RenderContext::bindTexture(const std::string& loc, GLuint active, const GLuint tex)const {
     GLuint location = oxglGetUniformLocation(_program, loc.c_str());
-    glActiveTexture(GL_TEXTURE0 + active);
+    oxglActiveTexture(GL_TEXTURE0 + active);
     glBindTexture(GL_TEXTURE_2D, tex);
-    glUniform1i(location, active);
+    oxglUniform1i(location, active);
 }
 
 void RenderContext::bindTexture(GLenum index, int texture, std::string loc, int pos) const {
@@ -62,12 +62,12 @@ void RenderContext::bindValue(const std::string &&loc, float f) const {
 
 void RenderContext::bindValue(const std::string &&loc, const bool b) const {
     GLint ul = oxglGetUniformLocation(_program, loc.c_str());
-    glUniform1i(ul, b);
+    oxglUniform1i(ul, b);
 }
 
 void RenderContext::bindValue(const std::string &&loc, const Vector2 &v) const {
     GLint ul = oxglGetUniformLocation(_program, loc.c_str());
-    glUniform2f(ul, v.x, v.y);
+    oxglUniform2f(ul, v.x, v.y);
 
 }
 
