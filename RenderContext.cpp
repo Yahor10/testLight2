@@ -72,13 +72,13 @@ void RenderContext::bindValue(const std::string &&loc, const Vector2 &v) const {
 }
 
 void RenderContext::bindValue(const std::string &&loc, const Vector3 &v) const {
-    GLint ul = glGetUniformLocation(_program, loc.c_str());
+    GLint ul = oxglGetUniformLocation(_program, loc.c_str());
     glUniform3f(ul, v.x, v.y, v.z);
 }
 
 void RenderContext::bindQuadVertices(int vbo, size_t size) const {
     oxglBindBuffer(GL_ARRAY_BUFFER, vbo);
-    GLuint location = glGetAttribLocation(_program, "aVertex");
+    GLuint location = oxglGetAttribLocation(_program, "aVertex");
     oxglEnableVertexAttribArray(location);
     oxglVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 }
