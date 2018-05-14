@@ -328,9 +328,9 @@ public:
                 -1, 1, 1};
 
         //And uniforms.
-        GLint mp = glGetUniformLocation(_spriteprogram, "uViewportTransform");
+        GLint mp = oxglGetUniformLocation(_spriteprogram, "uViewportTransform");
         glUniformMatrix3fv(mp, 1, GL_FALSE, matrix);
-        GLint cp = glGetUniformLocation(_spriteprogram, "uCameraPosition");
+        GLint cp = oxglGetUniformLocation(_spriteprogram, "uCameraPosition");
         oxglUniform2f(cp, 0, 0);
 
         int blend_vsh = ShaderProgramGL::createShader(GL_VERTEX_SHADER, vertexQUAD);
@@ -376,7 +376,7 @@ public:
         oxglUseProgram(m_shadow_program);
         CHECKGL();
 
-        GLint mp2 = glGetUniformLocation(m_shadow_program, "uViewportTransform");
+        GLint mp2 = oxglGetUniformLocation(m_shadow_program, "uViewportTransform");
         glUniformMatrix3fv(mp2, 1, GL_FALSE, matrix);
 
         oxglDetachShader(_spriteprogram, vs);

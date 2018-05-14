@@ -41,7 +41,7 @@ void RenderContext::bindTexture(GLenum index, int texture) {
 }
 
 void RenderContext::bindTexture(const std::string& loc, GLuint active, const GLuint tex)const {
-    GLuint location = glGetUniformLocation(_program, loc.c_str());
+    GLuint location = oxglGetUniformLocation(_program, loc.c_str());
     glActiveTexture(GL_TEXTURE0 + active);
     glBindTexture(GL_TEXTURE_2D, tex);
     glUniform1i(location, active);
@@ -61,13 +61,14 @@ void RenderContext::bindValue(const std::string &&loc, float f) const {
 }
 
 void RenderContext::bindValue(const std::string &&loc, const bool b) const {
-    GLint ul = glGetUniformLocation(_program, loc.c_str());
+    GLint ul = oxglGetUniformLocation(_program, loc.c_str());
     glUniform1i(ul, b);
 }
 
 void RenderContext::bindValue(const std::string &&loc, const Vector2 &v) const {
-    GLint ul = glGetUniformLocation(_program, loc.c_str());
+    GLint ul = oxglGetUniformLocation(_program, loc.c_str());
     glUniform2f(ul, v.x, v.y);
+
 }
 
 void RenderContext::bindValue(const std::string &&loc, const Vector3 &v) const {
@@ -76,10 +77,10 @@ void RenderContext::bindValue(const std::string &&loc, const Vector3 &v) const {
 }
 
 void RenderContext::bindQuadVertices(int vbo, size_t size) const {
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    oxglBindBuffer(GL_ARRAY_BUFFER, vbo);
     GLuint location = glGetAttribLocation(_program, "aVertex");
-    glEnableVertexAttribArray(location);
-    glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    oxglEnableVertexAttribArray(location);
+    oxglVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 }
 
 //void RenderContext::bindValue(const string& loc, const glm::mat3x3& m) const {// TODO set matrix
