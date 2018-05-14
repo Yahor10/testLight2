@@ -240,17 +240,18 @@ public:
     }
 
     void loadAll() {
+        //batterfly
         AnimationFrame frame = resources.getResAnim("bg")->getFrame(0);//
         int texture = (int) (size_t) frame.getDiffuse().base->getHandle();
 
-        AnimationFrame frame = resources.getResAnim("bg")->getFrame(0);//
-        int texture = (int) (size_t) frame.getDiffuse().base->getHandle();
+        AnimationFrame frame2 = resources.getResAnim("batterfly")->getFrame(0);//
+        int texture2 = (int) (size_t) frame2.getDiffuse().base->getHandle();
 
-        auto LightSpr = new LightBackground(texture, texture);
+        auto LightSpr = new LightBackground(texture, texture2);
         LightSpr->x(10);
         LightSpr->y(10);
 
-        auto LightSpr2 = new LightBackground(texture, texture);
+        auto LightSpr2 = new LightBackground(texture, texture2);
         LightSpr2->x(512);
         LightSpr2->y(512);
 
@@ -260,36 +261,36 @@ public:
         Emitter *m_mouse_emitter = new Emitter(Vector3(200, 200, 10), 800, Vector3(1, 0.9, 0.9));
 
         lights.push_back(m_mouse_emitter);
-
+//
         for (auto iter = objects.begin(); iter != objects.end(); iter++) {
             (*iter)->LoadResources();
         }
-
-        glGenVertexArrays(1, &vertexArray);
-        glBindVertexArray(vertexArray);
-
-        //Make fullscreen quad vbo.
-        Vector3 verts[6] = {
-                Vector3(-1, -1, 1),
-                Vector3(1, -1, 1),
-                Vector3(-1, 1, 1),
-                Vector3(1, -1, 1),
-                Vector3(-1, 1, 1),
-                Vector3(1, 1, 1)
-        };
-
-        m_quad_vbo_size = sizeof(verts);
-
-        glGenBuffers(1, &m_quad_vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, m_quad_vbo);
-        glBufferData(GL_ARRAY_BUFFER, m_quad_vbo_size, &verts[0], GL_STATIC_DRAW);
-
-        initPrograms();
-        initBuffers();
+////
+//        glGenVertexArrays(1, &vertexArray);
+//        glBindVertexArray(vertexArray);
 //
-        glEnable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+//        //Make fullscreen quad vbo.
+//        Vector3 verts[6] = {
+//                Vector3(-1, -1, 1),
+//                Vector3(1, -1, 1),
+//                Vector3(-1, 1, 1),
+//                Vector3(1, -1, 1),
+//                Vector3(-1, 1, 1),
+//                Vector3(1, 1, 1)
+//        };
+//
+//        m_quad_vbo_size = sizeof(verts);
+//
+//        oxglGenBuffers(1, &m_quad_vbo);
+//        oxglBindBuffer(GL_ARRAY_BUFFER, m_quad_vbo);
+//        glBufferData(GL_ARRAY_BUFFER, m_quad_vbo_size, &verts[0], GL_STATIC_DRAW);
+//
+//        initPrograms();
+//        initBuffers();
+////
+//        glEnable(GL_TEXTURE_2D);
+//        glDisable(GL_BLEND);
+//        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     }
 
     void beginDrawSprites() {
@@ -321,11 +322,6 @@ public:
         oxglLinkProgram(_spriteprogram);
         oxglUseProgram(_spriteprogram);
 
-//        MatrixT<float> display(2 / m_width, 0, 0, 0.0f, // first column
-//                               0.0f, -2 / m_height, 0.0f, 0.0f, // second column
-//                               -1.0f, 1.0f, 1.0f, 0.0f, // third column
-//                               0.0f, 0.0f, 0.0f, 0.0f);
-
         GLfloat matrix[] = {
                 2 / m_width, 0, 0,
                 0, 2 / -m_height, 0,
@@ -333,7 +329,7 @@ public:
 
         //And uniforms.
         GLint mp = glGetUniformLocation(_spriteprogram, "uViewportTransform");
-        oxglUniformMatrix4fv(mp, 1, GL_FALSE, matrix);
+        glUniformMatrix3fv(mp, 1, GL_FALSE, matrix);
         GLint cp = glGetUniformLocation(_spriteprogram, "uCameraPosition");
         oxglUniform2f(cp, 0, 0);
 
@@ -381,7 +377,7 @@ public:
         CHECKGL();
 
         GLint mp2 = glGetUniformLocation(m_shadow_program, "uViewportTransform");
-        oxglUniformMatrix4fv(mp2, 1, GL_FALSE, matrix);
+        glUniformMatrix3fv(mp2, 1, GL_FALSE, matrix);
 
         oxglDetachShader(_spriteprogram, vs);
         oxglDetachShader(_spriteprogram, fs);
@@ -421,7 +417,7 @@ public:
 
     void initBuffers() {
         glGenFramebuffers(1, &m_sprite_gbuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, m_sprite_gbuffer);
+        oxglBindFramebuffer(GL_FRAMEBUFFER, m_sprite_gbuffer);
 
         //No need for precision.
         glGenTextures(1, &m_sprite_gbuffer_color);
@@ -531,11 +527,15 @@ public:
 
         glEnable(GL_DEPTH_TEST);
         glDisable(GL_BLEND);
+
         AnimationFrame frame = resources.getResAnim("bg")->getFrame(0);//
-//
         int texture = (int) (size_t) frame.getDiffuse().base->getHandle();
+
+        AnimationFrame frame2 = resources.getResAnim("batterfly")->getFrame(0);//
+        int texture2 = (int) (size_t) frame2.getDiffuse().base->getHandle();
+
         for (auto iter = objects.begin(); iter != objects.end(); iter++) {
-            (*iter)->Draw(c,texture,texture);
+            (*iter)->Draw(c, texture, texture2);
         }
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
@@ -543,50 +543,50 @@ public:
 
         //This is kinda hacky because I decided to store the framebuffers in the render object.
         //Ideally I'd do more of this in the scene.
-        for (auto light = lights.begin(); light != lights.end(); light++) {
-            //Set the framebuffer.
-            glBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_fbo);
-            glClear(GL_COLOR_BUFFER_BIT);
-            lightCtx.useProgram(m_light_pass_program);
-            lightCtx.bindVertices(m_quad_vbo, m_quad_vbo_size);
-            //Set the light uniforms
-            lightCtx.bindValue("uLightColor", (*light)->color());
-            lightCtx.bindValue("uLightPosition", (*light)->position());
-            lightCtx.bindValue("uConstant", (*light)->constant());
-            lightCtx.bindValue("uLinear", (*light)->linear());
-            lightCtx.bindValue("uQuadratic", (*light)->quadratic());
-            lightCtx.bindValue("uRadius", (*light)->radius());
-
-            lightCtx.bindValue("uCameraPosition", Vector2(0, 0));
-
-            lightCtx.bindTexture("uNormal", 0, m_sprite_gbuffer_normal);
-
-            //Draw the textured quad pass.
-            lightCtx.Draw(6);
-
-            glBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_mask_fbo);
-            glClear(GL_COLOR_BUFFER_BIT);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            //Draw the shadow layer over it.
-            shadowCtx.useProgram(m_shadow_program);
-            shadowCtx.bindValue("uLightPosition", (*light)->position());
-            shadowCtx.bindValue("uUnmask", false);
-//            scene()->DrawShadowLayer(shadowCtx);
-            shadowCtx.bindValue("uUnmask", true);
-//            scene()->DrawShadowLayer(shadowCtx);
-
-            //This is where blurring the mask layer would go.
-
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-            //Draw to the accumulated light framebuffer.
-            glBindFramebuffer(GL_FRAMEBUFFER, m_light_accum_fbo);
-
-            lightCombine.useProgram(m_light_accum_program);
-            lightCombine.bindVertices(m_quad_vbo, m_quad_vbo_size);
-            lightCombine.bindTexture("uIntensity", 0, m_light_pass_fbo_tex);
-            lightCombine.bindTexture("uMask", 1, m_light_pass_mask_fbo_tex);
-            lightCombine.Draw(6);
-        }
+//        for (auto light = lights.begin(); light != lights.end(); light++) {
+//            //Set the framebuffer.
+//            glBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_fbo);
+//            glClear(GL_COLOR_BUFFER_BIT);
+//            lightCtx.useProgram(m_light_pass_program);
+//            lightCtx.bindVertices(m_quad_vbo, m_quad_vbo_size);
+//            //Set the light uniforms
+//            lightCtx.bindValue("uLightColor", (*light)->color());
+//            lightCtx.bindValue("uLightPosition", (*light)->position());
+//            lightCtx.bindValue("uConstant", (*light)->constant());
+//            lightCtx.bindValue("uLinear", (*light)->linear());
+//            lightCtx.bindValue("uQuadratic", (*light)->quadratic());
+//            lightCtx.bindValue("uRadius", (*light)->radius());
+//
+//            lightCtx.bindValue("uCameraPosition", Vector2(0, 0));
+//
+//            lightCtx.bindTexture("uNormal", 0, m_sprite_gbuffer_normal);
+//
+//            //Draw the textured quad pass.
+//            lightCtx.Draw(6);
+//
+//            glBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_mask_fbo);
+//            glClear(GL_COLOR_BUFFER_BIT);
+//            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//            //Draw the shadow layer over it.
+//            shadowCtx.useProgram(m_shadow_program);
+//            shadowCtx.bindValue("uLightPosition", (*light)->position());
+//            shadowCtx.bindValue("uUnmask", false);
+////            scene()->DrawShadowLayer(shadowCtx);
+//            shadowCtx.bindValue("uUnmask", true);
+////            scene()->DrawShadowLayer(shadowCtx);
+//
+//            //This is where blurring the mask layer would go.
+//
+//            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+//            //Draw to the accumulated light framebuffer.
+//            glBindFramebuffer(GL_FRAMEBUFFER, m_light_accum_fbo);
+//
+//            lightCombine.useProgram(m_light_accum_program);
+//            lightCombine.bindVertices(m_quad_vbo, m_quad_vbo_size);
+//            lightCombine.bindTexture("uIntensity", 0, m_light_pass_fbo_tex);
+//            lightCombine.bindTexture("uMask", 1, m_light_pass_mask_fbo_tex);
+//            lightCombine.Draw(6);
+//        }
 
         //Draw fullscreen quad.
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -633,101 +633,80 @@ GLfloat points[] = {0.0f, 0.5f, 0.0f, 0.5f, -0.5f, 0.0f, -0.5f, -0.5f, 0.0f};
 
 GLfloat colours[] = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
 
-
-class TestOpenGL : public Test {
-public:
-    TestOpenGL() {
-        spOpenGLSprite sprite = new OpenGLSprite;
-        sprite->loadAll();
-
-        content->addChild(sprite);
-//        sprite->();
-
-//        spSprite testBoth = new Sprite();
-//        testBoth->setResAnim(resources.getResAnim("batterfly"));
-//        content->addChild(testBoth);
-
-    }
-};
-
+MatrixT<float> t(1.0f, 0.0f, 0.0f, 0.0f, // first column
+                 0.0f, 1.0f, 0.0f, 0.0f, // second column
+                 0.0f, 0.0f, 1.0f, 0.0f, // third column
+                 0.5f, 0.0f, 0.0f, 1.0f);
+GLuint vao;
+GLuint points_vbo;
+GLuint colours_vbo;
 
 class TestBuffer : public Sprite {
 public:
     int _spriteprogram;
-    GLuint vao;
+ ;
 
     TestBuffer() {
     }
 
     void init() {
         glEnable(GL_DEPTH_TEST); // enable depth-testing
-        glDepthFunc(GL_LESS);         // depth-testing interprets a smaller value as "closer"
-
-        int vs = ShaderProgramGL::createShader(GL_VERTEX_SHADER, testVertex);
-        int fs = ShaderProgramGL::createShader(GL_FRAGMENT_SHADER, testFragment);
-
-        _spriteprogram = oxglCreateProgram();
-        oxglAttachShader(_spriteprogram, vs);
-        oxglAttachShader(_spriteprogram, fs);;
-
-//
-        CHECKGL();
-
-        oxglLinkProgram(_spriteprogram);
+        glDepthFunc(GL_LESS); // depth-testing interprets a smaller value as "closer"
 
 
-        oxglDetachShader(_spriteprogram, vs);
-        oxglDetachShader(_spriteprogram, fs);
+        oxglGenBuffers(1, &points_vbo);
+        oxglBindBuffer(GL_ARRAY_BUFFER, points_vbo);
+        oxglBufferData(GL_ARRAY_BUFFER, 9 * sizeof(GLfloat), points, GL_STATIC_DRAW);
 
-        oxglDeleteShader(vs);
-        oxglDeleteShader(fs);;
 
-        glEnable(GL_CULL_FACE); // cull face
-        glCullFace(GL_BACK);        // cull back face
-        glFrontFace(GL_CW);            // GL_CCW for counter clock-wise
-
-    }
-
-    void doRender(const RenderState &rs) {
-// wipe the drawing surface clear
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glViewport(0, 0, 800, 800);
-
-        GLuint points_vbo;
-        glGenBuffers(1, &points_vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
-        glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(GLfloat), points, GL_STATIC_DRAW);
-
-        GLuint colours_vbo;
-        glGenBuffers(1, &colours_vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, colours_vbo);
-        glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(GLfloat), colours, GL_STATIC_DRAW);
-
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-        glBindBuffer(GL_ARRAY_BUFFER, colours_vbo);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+        oxglGenBuffers(1, &colours_vbo);
+        oxglBindBuffer(GL_ARRAY_BUFFER, colours_vbo);
+        oxglBufferData(GL_ARRAY_BUFFER, 9 * sizeof(GLfloat), colours, GL_STATIC_DRAW);
 
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
 
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+
+        oxglBindBuffer(GL_ARRAY_BUFFER, points_vbo);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+        oxglBindBuffer(GL_ARRAY_BUFFER, colours_vbo);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+        glGenVertexArrays(1, &vao);
+
+
+
+        int blend_vsh = ShaderProgramGL::createShader(GL_VERTEX_SHADER, testVertex);
+        int blend_fsh = ShaderProgramGL::createShader(GL_FRAGMENT_SHADER, testFragment);
+
+        _spriteprogram = oxglCreateProgram();
+        glAttachShader(_spriteprogram, blend_vsh);
+        glAttachShader(_spriteprogram, blend_fsh);
+        glLinkProgram(_spriteprogram);
+
+        glDeleteShader(blend_vsh);
+        glDeleteShader(blend_fsh);
+    }
+
+
+
+    void doRender(const RenderState &rs) override {
+// wipe the drawing surface clear
         //
-        MatrixT<float> t(1.0f, 0.0f, 0.0f, 0.0f, // first column
-                         0.0f, 1.0f, 0.0f, 0.0f, // second column
-                         0.0f, 0.0f, 1.0f, 0.0f, // third column
-                         0.5f, 0.0f, 0.0f, 1.0f);
+        Material::null->apply();
+
 
         int matrix_location = glGetUniformLocation(_spriteprogram, "matrix");
         glUseProgram(_spriteprogram);
-        glUniformMatrix4fv(matrix_location, 1, GL_FALSE, t.ml);
 
         glEnable(GL_CULL_FACE); // cull face
         glCullFace(GL_BACK);        // cull back face
         glFrontFace(GL_CW);
 
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glViewport(0, 0, 960, 600);
         // Note: this call is not necessary, but I like to do it anyway before any
         // time that I call glDrawArrays() so I never use the wrong shader programme
         //
@@ -738,7 +717,39 @@ public:
         // Note: this call is not necessary, but I like to do it anyway before any
         // time that I call glDrawArrays() so I never use the wrong vertex data
         glBindVertexArray(vao);
+
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+
+        oxglBindBuffer(GL_ARRAY_BUFFER, points_vbo);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+        oxglBindBuffer(GL_ARRAY_BUFFER, colours_vbo);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
         // draw points 0-3 from the currently bound VAO with current in-use shader
         glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        oxglDisableVertexAttribArray(0);
+        oxglDisableVertexAttribArray(1);
+
+        CHECKGL();
+
     }
 };
+
+
+class TestOpenGL : public Test {
+public:
+    TestOpenGL() {
+        spOpenGLSprite sprite = new OpenGLSprite;
+        sprite->loadAll();
+        content->addChild(sprite);
+
+        spSprite testBoth = new Sprite();
+        testBoth->setResAnim(resources.getResAnim("batterfly"));
+        testBoth->setPosition(Vector2(101, 101));
+
+        content->addChild(testBoth);
+
+    }
+};
+
