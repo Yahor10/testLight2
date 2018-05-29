@@ -73,7 +73,7 @@ void RenderContext::bindValue(const std::string &&loc, const Vector2 &v) const {
 
 void RenderContext::bindValue(const std::string &&loc, const Vector3 &v) const {
     GLint ul = oxglGetUniformLocation(_program, loc.c_str());
-    glUniform3f(ul, v.x, v.y, v.z);
+    oxglUniform3f(ul, v.x, v.y, v.z);
 }
 
 void RenderContext::bindQuadVertices(int vbo, size_t size) const {

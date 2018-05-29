@@ -420,19 +420,20 @@ public:
         oxglBindFramebuffer(GL_FRAMEBUFFER, m_sprite_gbuffer);
 
         //No need for precision.
-        glGenTextures(1, &m_sprite_gbuffer_color);
-        glBindTexture(GL_TEXTURE_2D, m_sprite_gbuffer_color);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        oxglGenTextures(1, &m_sprite_gbuffer_color);
+        oxglBindTexture(GL_TEXTURE_2D, m_sprite_gbuffer_color);
+
+        oxglTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+        oxglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        oxglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
         glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_sprite_gbuffer_color, 0);
         CHECKGL();
-        glGenTextures(1, &m_sprite_gbuffer_normal);
-        glBindTexture(GL_TEXTURE_2D, m_sprite_gbuffer_normal);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        oxglGenTextures(1, &m_sprite_gbuffer_normal);
+        oxglBindTexture (GL_TEXTURE_2D, m_sprite_gbuffer_normal);
+        oxglTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+        oxglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        oxglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         CHECKGL();
         oxglGenRenderbuffers(1, &m_sprite_gbuffer_render);
         glBindRenderbuffer(GL_RENDERBUFFER, m_sprite_gbuffer_render);
@@ -447,7 +448,7 @@ public:
         //generate light occlusion pass framebuffer.
         //the one that we draw one light to
         oxglGenFramebuffers(1, &m_light_pass_fbo);
-        glBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_fbo);
+        oxglBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_fbo);
 
         glGenTextures(1, &m_light_pass_fbo_tex);
         glBindTexture(GL_TEXTURE_2D, m_light_pass_fbo_tex);
@@ -459,10 +460,10 @@ public:
         CHECKGL();
         //glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, m_light_pass_mask_fbo_tex, 0);
         GLenum lightDrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-        glDrawBuffers(1, lightDrawBuffers);
+        oxglDrawBuffers(1, lightDrawBuffers);
 
         oxglGenFramebuffers(1, &m_light_pass_mask_fbo);
-        glBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_mask_fbo);
+        oxglBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_mask_fbo);
 
         glGenTextures(1, &m_light_pass_mask_fbo_tex); //This could probably be lower precision.
         glBindTexture(GL_TEXTURE_2D, m_light_pass_mask_fbo_tex);
@@ -472,7 +473,7 @@ public:
         CHECKGL();
         glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_light_pass_mask_fbo_tex, 0);
         GLenum lightMaskDrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-        glDrawBuffers(1, lightMaskDrawBuffers);
+        oxglDrawBuffers(1, lightMaskDrawBuffers);
         CHECKGL();
         //generate lights framebuffer.
         //the one we recombine our stuff into.
@@ -487,7 +488,7 @@ public:
 
         glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_light_accum_fbo_tex, 0);
         GLenum lightAccumDrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-        glDrawBuffers(1, lightAccumDrawBuffers);
+        oxglDrawBuffers(1, lightAccumDrawBuffers);
 
         CHECKGL();
     }
@@ -682,12 +683,12 @@ public:
         int blend_fsh = ShaderProgramGL::createShader(GL_FRAGMENT_SHADER, testFragment);
 
         _spriteprogram = oxglCreateProgram();
-        glAttachShader(_spriteprogram, blend_vsh);
-        glAttachShader(_spriteprogram, blend_fsh);
-        glLinkProgram(_spriteprogram);
+        oxglAttachShader(_spriteprogram, blend_vsh);
+        oxglAttachShader(_spriteprogram, blend_fsh);
+        oxglLinkProgram(_spriteprogram);
 
-        glDeleteShader(blend_vsh);
-        glDeleteShader(blend_fsh);
+        oxglDeleteShader(blend_vsh);
+        oxglDeleteShader(blend_fsh);
     }
 
 
