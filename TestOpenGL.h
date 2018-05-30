@@ -420,75 +420,75 @@ public:
         oxglBindFramebuffer(GL_FRAMEBUFFER, m_sprite_gbuffer);
 
         //No need for precision.
-        oxglGenTextures(1, &m_sprite_gbuffer_color);
-        oxglBindTexture(GL_TEXTURE_2D, m_sprite_gbuffer_color);
+        glGenTextures(1, &m_sprite_gbuffer_color);
+        glBindTexture(GL_TEXTURE_2D, m_sprite_gbuffer_color);
 
-        oxglTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-        oxglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        oxglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
         oxglFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_sprite_gbuffer_color, 0);
         CHECKGL();
-        oxglGenTextures(1, &m_sprite_gbuffer_normal);
-        oxglBindTexture (GL_TEXTURE_2D, m_sprite_gbuffer_normal);
-        oxglTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-        oxglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        oxglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glGenTextures(1, &m_sprite_gbuffer_normal);
+        glBindTexture (GL_TEXTURE_2D, m_sprite_gbuffer_normal);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         CHECKGL();
-        oxglGenRenderbuffers(1, &m_sprite_gbuffer_render);
-        oxglBindRenderbuffer(GL_RENDERBUFFER, m_sprite_gbuffer_render);
-        oxglRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_width, m_height);
-        oxglFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_sprite_gbuffer_render);
+        glGenRenderbuffers(1, &m_sprite_gbuffer_render);
+        glBindRenderbuffer(GL_RENDERBUFFER, m_sprite_gbuffer_render);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_width, m_height);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_sprite_gbuffer_render);
 
         oxglFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, m_sprite_gbuffer_normal, 0);
 
         GLenum spriteDrawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-        oxglDrawBuffers(2, spriteDrawBuffers);
+        glDrawBuffers(2, spriteDrawBuffers);
 
         //generate light occlusion pass framebuffer.
         //the one that we draw one light to
-        oxglGenFramebuffers(1, &m_light_pass_fbo);
-        oxglBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_fbo);
+        glGenFramebuffers(1, &m_light_pass_fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_fbo);
 
-        oxglGenTextures(1, &m_light_pass_fbo_tex);
-        oxglBindTexture(GL_TEXTURE_2D, m_light_pass_fbo_tex);
-        oxglTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-        oxglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        oxglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glGenTextures(1, &m_light_pass_fbo_tex);
+        glBindTexture(GL_TEXTURE_2D, m_light_pass_fbo_tex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-        oxglFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_light_pass_fbo_tex, 0);
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_light_pass_fbo_tex, 0);
         CHECKGL();
         //glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, m_light_pass_mask_fbo_tex, 0);
         GLenum lightDrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-        oxglDrawBuffers(1, lightDrawBuffers);
+        glDrawBuffers(1, lightDrawBuffers);
 
-        oxglGenFramebuffers(1, &m_light_pass_mask_fbo);
-        oxglBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_mask_fbo);
+        glGenFramebuffers(1, &m_light_pass_mask_fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_light_pass_mask_fbo);
 
-        oxglGenTextures(1, &m_light_pass_mask_fbo_tex); //This could probably be lower precision.
-        oxglBindTexture(GL_TEXTURE_2D, m_light_pass_mask_fbo_tex);
-        oxglTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-        oxglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        oxglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glGenTextures(1, &m_light_pass_mask_fbo_tex); //This could probably be lower precision.
+        glBindTexture(GL_TEXTURE_2D, m_light_pass_mask_fbo_tex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         CHECKGL();
-        oxglFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_light_pass_mask_fbo_tex, 0);
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_light_pass_mask_fbo_tex, 0);
         GLenum lightMaskDrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-        oxglDrawBuffers(1, lightMaskDrawBuffers);
+        glDrawBuffers(1, lightMaskDrawBuffers);
         CHECKGL();
         //generate lights framebuffer.
         //the one we recombine our stuff into.
-        oxglGenFramebuffers(1, &m_light_accum_fbo);
+        glGenFramebuffers(1, &m_light_accum_fbo);
         glBindFramebuffer(GL_FRAMEBUFFER, m_light_accum_fbo);
 
-        oxglGenTextures(1, &m_light_accum_fbo_tex);
-        oxglBindTexture(GL_TEXTURE_2D, m_light_accum_fbo_tex);
-        oxglTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-        oxglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        oxglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glGenTextures(1, &m_light_accum_fbo_tex);
+        glBindTexture(GL_TEXTURE_2D, m_light_accum_fbo_tex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-        oxglFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_light_accum_fbo_tex, 0);
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_light_accum_fbo_tex, 0);
         GLenum lightAccumDrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-        oxglDrawBuffers(1, lightAccumDrawBuffers);
+        glDrawBuffers(1, lightAccumDrawBuffers);
 
         CHECKGL();
     }
